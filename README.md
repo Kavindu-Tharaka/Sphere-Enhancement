@@ -1,50 +1,42 @@
-# React + TypeScript + Vite
+# React App with Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a React application created using Vite, a fast build tool that provides a smooth development experience. 
 
-Currently, two official plugins are available:
+## Table of Contents
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- [Prerequisites](#prerequisites)
+- [Clone the Repository](#clone-the-repository)
+- [Install Dependencies](#install-dependencies)
+- [Run the Development Server](#run-the-development-server)
+- [Build](#build)
 
-## Expanding the ESLint configuration
+## Prerequisites
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Before you begin, ensure you have the following installed on your machine:
 
-- Configure the top-level `parserOptions` property like this:
+- [Node.js](https://nodejs.org/)
+- [npm](https://www.npmjs.com/) (comes with Node.js)
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## Clone the Repository
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+To get a local copy of the project, use the following command:
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+`git clone https://github.com/Kavindu-Tharaka/Sphere-Enhancement.git`
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+## Install Dependencies
+
+Navigate to the project directory and install the required dependencies:
+
+`npm install`
+
+## Run the Development Server
+
+Once the dependencies are installed, you can start the development server. Use the following command:
+
+`npm run dev`
+
+## Build
+
+To create an optimized build of your application for production, run:
+
+`npm run build`
