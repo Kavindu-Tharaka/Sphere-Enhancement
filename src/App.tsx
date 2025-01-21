@@ -1,13 +1,11 @@
-import { useState } from 'react'
+import Checkout from './components/Checkout'
 
 function App() {
-  const [count, setCount] = useState(125)
-
-  return (
-    <button onClick={() => setCount((count) => count + 1)}>
-      Count is {count}
-    </button>
-  )
+    return (
+      <div>
+        <Checkout />
+      </div>
+    )
 }
 
 export default App
