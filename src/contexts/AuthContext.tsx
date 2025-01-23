@@ -1,34 +1,54 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, ReactNode, useContext } from 'react';
 
-
-interface AuthContextType {
-  user: string | null;
-  login: (username: string) => void;
-  logout: () => void;
-}
-
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-
-export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const [user, setUser] = useState<string | null>(null);
-
-  const login = (username: string) => setUser(username);
-  const logout = () => setUser(null);
-
-  return (
-    <AuthContext.Provider value={{ user, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+type User = {
+    username: string;
+    password: string;
 };
 
+const mockUser: User = {
+  username: 'mockuser',
+  password: 'password'
+}
 
-export const useAuth = (): AuthContextType => {
+type AuthContextType = {
+    user: User | null;
+    login: (username: string, password: string) => void;
+    logout: () => void;
+};
+
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+type AuthProviderProps = {
+    children: ReactNode;
+};
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+    const [user, setUser] = useState<User | null>(null);
+
+    const login = (username: string, password: string) => {
+        // Mock authentication logic
+        if (username === mockUser.username && password === mockUser.password) {
+            setUser(mockUser);
+        } else {
+            alert('Invalid credentials');
+        }
+    };
+
+    const logout = () => {
+        setUser(null);
+    };
+
+    return (
+        <AuthContext.Provider value={{ user, login, logout }}>
+            {children}
+        </AuthContext.Provider>
+    );
+};
+
+export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+  if (context === undefined) {
+      throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };
