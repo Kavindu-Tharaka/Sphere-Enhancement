@@ -1,14 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, CSSProperties } from 'react';
 import Popup from './Popup';
 import { CheckoutContext } from '../contexts/CheckoutContext';
-import { CSSProperties } from 'react';
 
 const Checkout: React.FC = () => {
-
     const [showPopup, setShowPopup] = useState(false);
     const [buttonLabel, setButtonLabel] = useState('Checkout');
     const [popupLabel, setPopupLabel] = useState('Are you sure?');
+    const [currentDateTime, setCurrentDateTime] = useState(new Date());
     const numOfHours = 15;
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentDateTime(new Date());
+        }, 1000);
+        return () => clearInterval(interval);
+    }, []);
 
     const handleButtonClick = () => {
         if (numOfHours > 8) {
@@ -20,18 +26,28 @@ const Checkout: React.FC = () => {
     };
 
     return (
-        <CheckoutContext.Provider value={{setShowPopup, setButtonLabel, popupLabel, numOfHours}}>
+        <CheckoutContext.Provider value={{ setShowPopup, setButtonLabel, popupLabel, numOfHours }}>
             <div style={styles.container}>
-                <h1 style={styles.centeredText}>Hi Kavindu</h1>
-                {!showPopup && 
-                    <button 
-                    style={styles.button}
-                    onClick={handleButtonClick}
-                    disabled={buttonLabel === 'Completed'}
+                <h1 className="text-center mb-4">Hi {'{user}'}</h1>
+                {!showPopup &&
+                    <button
+                        style={styles.button}
+                        onClick={handleButtonClick}
+                        disabled={buttonLabel === 'Completed'}
                     >
-                        {buttonLabel}
-                    </button>}
-                {showPopup && <Popup/>}
+                        <div>
+                            <span>{currentDateTime.toLocaleDateString()}</span>
+                            <br/>
+                            <span>{currentDateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                            <br/>
+                            <span>{buttonLabel}</span>
+                        </div>
+                    </button>
+                }
+                {showPopup && <Popup />}
+                <p className="text-center mb-4">{'{hoursWorked}'} hours worked</p>
+                <p className="text-center mb-4">Last checking time</p>
+                <p className="text-center mb-4">Checked In @ {'{chekedInTime here}'}</p>
             </div>
         </CheckoutContext.Provider>
     );
@@ -55,19 +71,6 @@ const styles: { [key: string]: CSSProperties } = {
         alignItems: 'center',
         fontSize: '16px',
         cursor: 'pointer',
-    },
-    popup: {
-        position: 'absolute' as 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        backgroundColor: 'white',
-        padding: '20px',
-        boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-        textAlign: 'center' as 'center',
-    },
-    centeredText: {
-        marginBottom: '10px',
     }
 };
 
