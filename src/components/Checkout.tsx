@@ -1,12 +1,14 @@
 import React, { useState, useEffect, CSSProperties } from 'react';
 import Popup from './Popup';
 import { CheckoutContext } from '../contexts/CheckoutContext';
+import { useAuth } from '../contexts/AuthContext';
 
 const Checkout: React.FC = () => {
     const [showPopup, setShowPopup] = useState(false);
     const [buttonLabel, setButtonLabel] = useState('Checkout');
     const [popupLabel, setPopupLabel] = useState('Are you sure?');
     const [currentDateTime, setCurrentDateTime] = useState(new Date());
+    const { user } = useAuth();
     const numOfHours = 15;
 
     useEffect(() => {
@@ -28,7 +30,7 @@ const Checkout: React.FC = () => {
     return (
         <CheckoutContext.Provider value={{ setShowPopup, setButtonLabel, popupLabel, numOfHours }}>
             <div style={styles.container}>
-                <h1 className="text-center mb-4">Hi {'{user}'}</h1>
+                <h1 className="text-center mb-4">Hi {user?.username}!</h1>
                 {!showPopup &&
                     <button
                         style={styles.button}

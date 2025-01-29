@@ -4,6 +4,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import LoginForm from './components/Auth/Login';
 import PrivateRoute from './components/Auth/PrivateRoute';
 import CheckinComponent from './components/CheckIn/CheckIn';
+import Checkout from './components/Checkout';
 
 const App: React.FC = () => {
     return (
@@ -19,6 +20,7 @@ const App: React.FC = () => {
                             </PrivateRoute>
                         }
                     />
+                    <Route path="/checkout" element={<Checkout/>} />
                     <Route path="*" element={<Navigate to="/login" />} />
                 </Routes>
             </Router>
