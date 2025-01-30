@@ -19,6 +19,11 @@ const Popup: React.FC = () => {
     function handleYesClick(): void {
         checkoutContext?.setShowPopup(false);
         checkoutContext?.setButtonLabel('Completed');
+        localStorage.setItem('checkedOut', 'done');
+
+        const now = new Date();
+        const checkOutTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }).toUpperCase();
+        localStorage.setItem('checkedOutTime', checkOutTime);
     }
 
     function handleNoClick(): void {

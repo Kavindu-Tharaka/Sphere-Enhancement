@@ -4,7 +4,6 @@ interface CheckoutContextType {
     setShowPopup: React.Dispatch<React.SetStateAction<boolean>>;
     setButtonLabel: React.Dispatch<React.SetStateAction<string>>;
     popupLabel: string;
-    numOfHours: number;
 }
 
 const CheckoutContext = createContext<CheckoutContextType | null>(null);
