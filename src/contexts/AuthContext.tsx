@@ -6,8 +6,8 @@ type User = {
 };
 
 const mockUser: User = {
-  username: 'qw',
-  password: 'qw'
+  username: 'mockuser',
+  password: 'password',
 }
 
 type AuthContextType = {

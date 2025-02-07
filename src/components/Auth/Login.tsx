@@ -20,7 +20,7 @@ const LoginForm: React.FC = () => {
         login(username, password);
 
         // Redirect to dashboard if login is successful
-        if (username === 'qw' && password === 'qw') {
+        if (username === 'mockuser' && password === 'password') {
             navigate('/checkin');
         }
     };
