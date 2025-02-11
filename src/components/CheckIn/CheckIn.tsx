@@ -1,20 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { CSSProperties, useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { CheckoutContext } from '../../contexts/CheckoutContext';
+import Popup from '../Popup';
 
 const CheckinComponent: React.FC = () => {
   const { user, logout } = useAuth();
 
   const [time, setTime] = useState('');
   const [date, setDate] = useState('');
-  const [CheckInOutLabel, setCheckInOutLabel] = useState('');
   const [elapsedTime, setElapsedTime] = useState('00:00');
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
-  let currentDateTimeWhenLogin = new Date();
-  let currentTimeWhenLogin = currentDateTimeWhenLogin.toLocaleTimeString();
-  let currentDateWhenLogin = currentDateTimeWhenLogin.toLocaleDateString();
-
-  // Calculate elapsed time from check-in timestamp
   const calculateElapsedTime = (checkInTimestamp: number) => {
     const now = Date.now();
     const elapsed = now - checkInTimestamp;
@@ -27,40 +22,49 @@ const CheckinComponent: React.FC = () => {
       .padStart(2, '0')}`;
   };
 
-  // On component load
   useEffect(() => {
     console.log("useEffect...");
-    const savedText = localStorage.getItem('checkedIn');
+    const checkedInText = localStorage.getItem('checkedIn');
+    const checkedOutText = localStorage.getItem('checkedOut');
     const checkInTime = localStorage.getItem('checkedInTime');
     const checkInDate = localStorage.getItem('checkedInDate');
     const checkInTimestamp = localStorage.getItem('checkInTimestamp');
+    const checkedOutTime = localStorage.getItem('checkedOutTime');
 
-    if (savedText) {
-      setCheckInOutLabel("CheckOut");
+    if (checkedOutText === 'done') {
+      setButtonLabel("Completed");
+      setTime(checkedOutTime || '');
+      setDate(checkInDate || '');
+    } 
+    else if (checkedInText === 'done') {
+      setButtonLabel("Check Out");
       setTime(checkInTime || '');
       setDate(checkInDate || '');
-      setIsButtonDisabled(true);
 
       if (checkInTimestamp) {
         const elapsed = calculateElapsedTime(parseInt(checkInTimestamp));
         setElapsedTime(elapsed);
       }
-    } else {
-      setCheckInOutLabel("CheckIn");
     }
+    else {
+      setButtonLabel("Check In");
+    }
+
+    const interval = setInterval(() => {
+      setCurrentDateTime(new Date());
+    }, 1000);
+    return () => clearInterval(interval);
   }, []); 
 
-  // Handle check-in process
   function startCheckIn() {
     const now = new Date();
-    const checkInTime = now.toLocaleTimeString();
-    const checkInDate = now.toLocaleDateString();
+    const checkInTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }).toUpperCase();
+    const checkInDate = now.toLocaleDateString('en-CA').replace(/-/g, '.');
     const checkInTimestamp = now.getTime();
 
-    setCheckInOutLabel("CheckOut");
+    setButtonLabel("Check Out");
     setTime(checkInTime);
     setDate(checkInDate);
-    setIsButtonDisabled(true);
 
     localStorage.setItem('checkedIn', 'done');
     localStorage.setItem('checkedInTime', checkInTime);
@@ -70,34 +74,74 @@ const CheckinComponent: React.FC = () => {
     setElapsedTime('00:00');
   }
 
+    const [showPopup, setShowPopup] = useState(false);
+    const [buttonLabel, setButtonLabel] = useState('Check In');
+    const [popupLabel, setPopupLabel] = useState('Are you sure?');
+    const [currentDateTime, setCurrentDateTime] = useState(new Date());
+
+  const handleButtonClick = () => {
+      if(buttonLabel === 'Check In') {
+        startCheckIn()
+      }
+      else if(buttonLabel === 'Check Out') {
+        if (parseFloat(elapsedTime) > 8.5) {
+          setShowPopup(true);
+        } else {
+            setShowPopup(true);
+            setPopupLabel('Are you sure? You have not completed 8.5 Hours!');
+        }
+      }
+    };
+
   return (
-    <div>
-      <h2>Protected Content</h2>
-      <p>Welcome, {user?.username}!</p>
-      
-      <button onClick={startCheckIn} disabled={isButtonDisabled}>
-        {CheckInOutLabel}
-      </button>
-      
-      {CheckInOutLabel === "CheckIn" && <h3>CheckIn to start your work!</h3>}
-      {CheckInOutLabel !== "CheckIn" && <h3>{elapsedTime} hours worked</h3>}   
-      
-      <h3>Current date when login: {currentDateWhenLogin}</h3>
-      <h3>Current time when login: {currentTimeWhenLogin}</h3>
-      {CheckInOutLabel !== "CheckIn" && <h3>Last CheckIn @ {date} {time}</h3>}
+      <CheckoutContext.Provider value={{ setShowPopup, setButtonLabel, popupLabel }}>
+            <div style={styles.container}>
+                <h1 className="text-center mb-4">Hi {user?.username}!</h1>
+                {!showPopup &&
+                    <button
+                        style={styles.button}
+                        onClick={handleButtonClick}
+                        disabled={buttonLabel === 'Completed'}
+                    >
+                        <div>
+                            <span>{currentDateTime.toLocaleDateString('en-CA').replace(/-/g, '.')}</span>
+                            <br/>
+                            <span>{currentDateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }).toUpperCase()}</span>
+                            <br/>
+                            <span>{buttonLabel}</span>
+                        </div>
+                    </button>
+                }
+                {showPopup && <Popup />}
+                <p className="text-center mb-4">{elapsedTime} hours worked</p>
+                <p className="text-center mb-4">Last checking time</p>
+                <p className="text-center mb-4">Checked In @ {date} {time}</p>
 
-      {/* Logout button */}
-      <button onClick={logout}>Logout</button>
-    </div>
-
-
-
-    // <div>
-    // <h2>Protected Content</h2>
-    // <p>Welcome, {user?.username}!</p>
-    // <button onClick={logout}>Logout</button>
-    // </div>
+                <button onClick={logout}>Logout</button>
+            </div>
+        </CheckoutContext.Provider>    
   );
+};
+
+const styles: { [key: string]: CSSProperties } = {
+  container: {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '100vh',
+      position: 'relative' as 'relative',
+  },
+  button: {
+      width: '100px',
+      height: '100px',
+      borderRadius: '50%',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      fontSize: '16px',
+      cursor: 'pointer',
+  }
 };
 
 export default CheckinComponent;
